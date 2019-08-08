@@ -1033,20 +1033,6 @@ core_subset_OTU_table <- otu_us_rare_rhizo[rownames(otu_us_rare_rhizo) %in% glob
 combined_occ_data_v2=combined_occ_data
 combined_occ_data_v2$bean_found[combined_occ_data_v2$otu %in% global_core] <- 'core'
 
-# ggplot(data=combined_occ_data_v2, aes(x=abun, y=occ)) +
-#   theme_bw()+
-#   geom_point(pch=21,  size=3, aes(fill=bean_found)) +
-#   geom_line(color='grey80', data=obs.np, size=2, aes(y=obs.np$freq.pred, x=log10(obs.np$p)), alpha=.5) +
-#   geom_line(color='grey80', lty='twodash', size=1, data=obs.np, aes(y=obs.np$pred.upr, x=log10(obs.np$p)), alpha=.5)+
-#   geom_line(color='grey80', lty='twodash', size=1, data=obs.np, aes(y=obs.np$pred.lwr, x=log10(obs.np$p)), alpha=.5)+
-#   scale_fill_manual(aes(breaks = bean_found), values=c('darkorange','#97CC04','black', 'white')) +
-#   xlim(-6,-1.5)+
-#   labs(x=paste("log10(mean abundance)\n (n=",sta.np.16S$Richness," OTUs)", sep=''), y=paste("Occupancy (n=",sta.np.16S$Samples," samples)",sep=''), fill='Genotype') +
-#   theme(legend.position="top",
-#         panel.border = element_blank(), panel.grid.major = element_blank(),
-#         panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
-#   guides(fill = guide_legend(override.aes = list(alpha=1)),
-#          fill = guide_legend(title=NULL))
 
 otu_rare_rhizo <- otu_us_rare[,map_combined$soil=='rhizosphere']
 otu.rhizo.rel.abun <- decostand(otu_rare_rhizo, method="total", MARGIN=2) #calculating relative abundance
