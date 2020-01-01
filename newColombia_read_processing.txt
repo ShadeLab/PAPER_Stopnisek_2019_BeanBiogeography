@@ -1,0 +1,23 @@
+cutadapt -a CCTACGGGNGGCWGCAG...GGATTAGATACCCBDGTAGTC -o Col_study/fwd_rw__merged.fq Col_study/merged.fq
+
+
+./usearch64 -fastx_uniques Col_study/fwd_rw__merged.fq -fastqout Col_study/uniques_merged.fastq -sizeout
+
+./usearch64 -sortbysize Col_study/uniques_merged.fastq -fastqout Col_study/nosig_uniques_merged.fastq -minsize 2
+
+./usearch64 -usearch_global Col_study/nosig_uniques_merged.fastq -id 0.97 -db /mnt/research/ShadeLab/WorkingSpace/SILVA_128_QIIME_release/rep_set/rep_set_16S_only/97/97_otus_16S.fasta -strand plus -uc Col_study/ref_seqs.uc -dbmatched Col_study/closed_reference.fasta -notmatched Col_study/failed_closed.fa
+
+
+./usearch64 -sortbysize Col_study/failed_closed.fa -fastaout Col_study/sorted_failed_closed.fasta
+
+./usearch64 -cluster_otus Col_study/sorted_failed_closed.fasta -minsize 2 -otus Col_study/denovo_otus.fasta -relabel OTU_dn_ -uparseout Col_study/denovo_otu.up --threads 40
+
+
+cat Col_study/closed_reference.fasta Col_study/denovo_otus.fasta > Col_study/full_rep_set.fasta
+
+./usearch64 -usearch_global Col_study/merged.fq -db Col_study/full_rep_set.fasta -strand plus -id 0.97 -uc Col_study/OTU_map.uc -otutabout Col_study/OTU_table.txt -biomout Col_study/OTU_jsn.biom
+
+
+mothur:
+
+classify.seqs(fasta=Col_test/full_rep_set.fasta, template=/mnt/home/stopnise/silva.nr_v128.align, taxonomy=/mnt/home/stopnise/silva.nr_v128.tax, method=wang)

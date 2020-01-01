@@ -84,20 +84,7 @@ otu_us <- read.table('Data/OTU_table_US.txt', sep='\t', row.names = 1, header=T)
 map_combined <- read.table('Data/map.txt', row.names = 1, sep='\t', header=T)
 
 #remove lines where taxonomy includes mitochondria
-otu_us <- otu_us[!grepl("Mitochondria", otu_us$taxonomy),]
-otu_us <- otu_us[!grepl("Chloroplast", otu_us$taxonomy),]
-
-tax_us <- otu_us['taxonomy']
-tax_us <- tax_us %>%
-  separate(taxonomy, into=c("Kingdom", "Phylum", "Class", 
-                            "Order", "Family", "Genus", "Species"), sep="; ", remove=F)
-tax_us[2:8] <- lapply(tax_us[2:8], function(x) gsub(".*__", "", x))
-
-otu_us['taxonomy'] <- NULL         #removing taxonomy column from the OTU table
-map_combined <- map_combined[-1,]  #removing sample SVERCc1 because of low read coverage 
-otu_us['SVERCc1'] <- NULL          #removing sample SVERCc1 because of low read coverage
-
-# Order the samples
+ <- <- <- <- <- <- <- <- <- # Order the samples
 otu_us <- otu_us[,order(colnames(otu_us))]
 # Order the samples of the map the same way
 map_combined=map_combined[order(rownames(map_combined)),]
@@ -154,7 +141,7 @@ set.seed(3)
 otu_us_rare <- t(rrarefy(t(otu_us), min(colSums(otu_us)))) 
 otu_us_rare <- otu_us_rare[rowSums(otu_us_rare)>0,]
 otu_rare <- otu_us_rare
-
+dim(otu_rare)
 # rhizosphere only
 otu_us_rhizo <- otu_us[,map_combined$soil=='rhizosphere']
 set.seed(33)
@@ -770,7 +757,7 @@ spp=t(otu_rare_rhizo)
 taxon=as.vector(size_occ$taxonomy)
 
 #Models for the whole community
-obs.np=sncm.fit(spp, taxon, stats=FALSE, pool=NULL)
+obs.np=sncm.fit(spp, taxon=F, stats=FALSE, pool=NULL)
 sta.np=sncm.fit(spp, taxon, stats=TRUE, pool=NULL)
 sta.np.16S <- sta.np
 
@@ -1178,12 +1165,11 @@ coreTaxaNo <- core_all_v1 %>%
 
 grid.arrange(auto_plot_fig, coreTaxaNo, widths=c(2.5,.7))
 
-
-core_all_v1 %>%
-  #filter(Order == 'Micrococcales') %>%
-  group_by(Order,Genus)%>%
-  summarise(n=mean(abun)) %>%
-  arrange(desc(-n))
+# ListCoreTaxa <- core_all_v1 %>%
+#   #filter(Order == 'Micrococcales') %>%
+#   group_by(Phylum, Family,Order,Genus)%>%
+#   summarise(n=mean(abun)) %>%
+#   arrange(desc(-n))
 
 ######
 #Venn
@@ -1373,6 +1359,25 @@ protest(bean.pcoa, bean.zotu.pcoa)
 # makeblastdb -in FASTX_output.fn -dbtype nucl -out ref
 # blastn -db ref -query seqtk_COREfastq.fn -out blastCORE.txt -outfmt 6 -perc_identity 100 -max_target_seqs 1
 #**********************************
+US_fastq <- read.table("Data/OTU_fastq_map.txt", sep='\t')
+head(US_fastq)
+readsGlobalCore <- US_fastq %>%
+  filter(V10 %in% global_core) %>%
+  group_by(V10) %>%
+  summarise(n=length(unique(V4)))
+mean(readsGlobalCore$n)
+
+No.reads.subOTU <- US_fastq %>%
+  filter(V10 %in% global_core) %>%
+  group_by(V10, V4) %>%
+  summarise(n=length(unique(V9))) %>%
+  group_by(V10) %>%
+  mutate(sumReads=sum(n),
+         rel.abun=n/sumReads)
+
+No.reads.subOTU <- No.reads.subOTU %>%
+  group_by(V10) %>%
+  mutate(newName = for(i in length(unique(V4))) paste('subOTU',i,sep=''))
 
 # subOTUids <- US_fastq$V9[US_fastq$V10 %in% global_core]
 # write.table(subOTUids,'~/Desktop/fatqCOREids.txt', sep='\t')
