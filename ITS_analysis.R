@@ -81,17 +81,6 @@ ggplot(map.alpha.its[map.alpha.its$soil=='rhizosphere' & map.alpha.its$variable=
         panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
         legend.position = 'none')
 
-# 
-# ggboxplot(map.alpha.its[map.alpha.its$soil=='rhizosphere',], x = "site", y = "value",
-#           facet.by = "variable", short.panel.labs = FALSE, , scales='free_y')+
-#   stat_compare_means(method = "anova")+      # Add global p-value
-#   stat_compare_means(label = "p.signif", method = "t-test")
-# 
-# ggboxplot(map.alpha.its[map.alpha.its$soil=='rhizosphere',], y = "value", x = "bean",
-#           facet.by = "variable", short.panel.labs = FALSE, scales='free_y')+
-#   stat_compare_means() +      # Add global p-value
-#   stat_compare_means(label = "p.signif", method = "t-test")
-
 # ######################################################
 #Beta diversity
 #PCoA
@@ -142,47 +131,10 @@ adonis(bean_its.dist~map_its$bean, strata=map_its$site)
 #Are sites different when you only comparing the same species?
 adonis(bean_its.dist~map_its$site, strata=map_its$bean)
 
-# Dissimilarity between the samples 
-BCdfITS <- data.frame(sample1=as.factor(rownames(as.matrix(bean_its.dist))),as.matrix(bean_its.dist)) %>%
-  gather(sample2, BC, -sample1)
-
-BCdfITS$sample1=as.character(BCdfITS$sample1)
-BCdfITS$sample2=as.character(BCdfITS$sample2)
-
-BCdfITS$site1=ifelse(grepl("NE", BCdfITS$sample1), "NE", BCdfITS$sample1)
-BCdfITS$site1=ifelse(grepl("SVERC", BCdfITS$sample1), "SVREC", BCdfITS$site1)
-BCdfITS$site1=ifelse(grepl("MRF", BCdfITS$sample1), "MRF", BCdfITS$site1)
-BCdfITS$site1=ifelse(grepl("WA", BCdfITS$sample1), "WA", BCdfITS$site1)
-BCdfITS$site1=ifelse(grepl("CO", BCdfITS$sample1), "CO", BCdfITS$site1)
-
-BCdfITS$site2=ifelse(grepl("NE", BCdfITS$sample2), "NE", BCdfITS$sample2)
-BCdfITS$site2=ifelse(grepl("SVERC", BCdfITS$sample2), "SVREC", BCdfITS$site2)
-BCdfITS$site2=ifelse(grepl("MRF", BCdfITS$sample2), "MRF", BCdfITS$site2)
-BCdfITS$site2=ifelse(grepl("WA", BCdfITS$sample2), "WA", BCdfITS$site2)
-BCdfITS$site2=ifelse(grepl("CO", BCdfITS$sample2), "CO", BCdfITS$site2)
-
-BCdfITS$combined=paste(BCdfITS$site1, BCdfITS$site2, sep="-")
-
-BCdistPlotITS <- BCdfITS %>% 
-  left_join(DISTdf, by='combined') %>%
-  filter(dist!=0.000) %>%
-  ggplot(aes(x=log(dist), y=log(BC))) +
-  geom_point() +
-  labs(x='Geographic distance (ln(km))', y='Community dissimilarity (ln(BC))') +
-  stat_smooth(method = "lm", size = .8)+
-  theme_bw()
-
-BCdistDFits <- BCdfITS %>% 
-  left_join(DISTdf, by='combined') %>%
-  filter(dist!=0.000)
-m <- lm(log(BCdistDFits$BC) ~ log(BCdistDFits$dist), BCdistDFits)
-summary(m)
-
 
 # ######################################################
 # #Taxonomic distribution 
 map_its$sample_ID <- rownames(map_its)
-#features <- c(sprintf("OTU%d", seq(1,1711)),"label")
 tax_its$otu_id <- rownames(tax_its)
 tax_its <- tax_its %>% select(otu_id, everything())
 
@@ -191,7 +143,6 @@ last_taxons<- apply(tax_its, 1, lastValue)
 tax_its$last_taxon <- last_taxons
 tax_its$final_names <- paste(tax_its$otu_id, tax_its$last_taxon, sep='-')
 
-#length(tax_its$last_taxon[tax_its$last_taxon == 'Fungi'])
 otu_its_rare_rhizo <- otu_its_rare[,map_its$soil=='rhizosphere']
 otu.rel.abun.ITS <- decostand(otu_its_rare_rhizo, method="total", MARGIN=2) #calculating relative abundance
 
@@ -248,6 +199,9 @@ All_ITS <- data.frame(otu_id=as.factor(rownames(otu.rel.abun.ITS)),otu.rel.abun.
   #       legend.position = 'bottom') +
   # guides(fill=guide_legend(ncol=3)) 
 
+#########
+# FigS 3C
+
 ITS_dt <- rbind(as.data.frame(site_ITS), as.data.frame(All_ITS)) %>%
   mutate(sep=if_else(sample_ID == 'all', 'all', 'site')) %>%
   ggplot(aes(y=n, x=as.character(sample_ID), fill=tax_names)) +
@@ -296,7 +250,11 @@ colnames(venndata) <- c("CO", "MRF", "NE", "CO", 'SVREC')
 venndata <- venndata[rowSums(venndata)>0,]
 v=vennCounts(venndata)
 v2=round(v[,"Counts"]/sum(v[,"Counts"]),2)
-Fig1S <- vennDiagram(v) #2734 shared between sites - CORE?
+
+#########
+# FigS 3D
+
+vennDiagram(v) 
 
 #Shared by site:
 CO_present <- CO_otu[rowSums(CO_otu)>1,]
@@ -366,24 +324,7 @@ size_occ_its %>%
 names(occ_abun_bean)[1] <- 'otu_id'
 combined_occ_data_its <- left_join(tmp_occ_its, occ_abun_bean)
 
-combined_occ_data_its%>%
-  #filter(total_presence==1) %>%
-  group_by(total_presence,found) %>%
-  summarise(counts=length(otu_id)) %>%
-  group_by(total_presence) %>%
-  mutate(tot_counts=sum(counts),
-         rel_contribution=counts/tot_counts)
-
-ggplot(data=occ_abun_bean, aes(x=abun, y=occ)) +
-  geom_point(size=3, pch=21, aes(fill=found)) +
-  scale_fill_manual(aes(breaks = col), values=c('darkorange','black', 'white')) +
-  labs(x="log(abundace per OTU)\n (n= 1505 OTUs)", y= "Mean occupancy (n=39)") +
-  theme_bw()+
-  theme(plot.title = element_text(hjust = 0.5),
-        legend.position = "none")
-
 #Sloan neutral model 
-
 spp=t(otu_its_rare_rhizo)
 taxon=as.vector(rownames(otu_its_rare_rhizo))
 
@@ -398,14 +339,10 @@ below.pred=sum(obs.np$freq < (obs.np$pred.lwr), na.rm=TRUE)/sta.np$Richness
 ap = obs.np$freq > (obs.np$pred.upr)
 bp = obs.np$freq < (obs.np$pred.lwr)
 
-plot(x=log10(obs.np$p), y=obs.np$freq, xlab="Log Abundance", ylab="Occurrence Frequency")
-points(x=log10(obs.np$p[ap==TRUE]), y=obs.np$freq[ap==TRUE], col="red", pch=19)
-points(x=log10(obs.np$p[bp==TRUE]), y=obs.np$freq[bp==TRUE], col="blue", pch=19)
-lines(obs.np$freq.pred~log10(obs.np$p), col="yellow", lty=1, lwd=6)
-lines(obs.np$pred.upr~log10(obs.np$p), col="yellow", lty=1, lwd=3)
-lines(obs.np$pred.lwr~log10(obs.np$p), col="yellow", lty=1, lwd=3)
+########
+# Fig 2B
 
-Fig2B <-ggplot(data=occ_abun_bean, aes(x=abun, y=occ)) +
+ggplot(data=occ_abun_bean, aes(x=abun, y=occ)) +
     theme_bw()+
     geom_point(pch=21,  size=3, aes(fill=found)) +
     geom_line(color='black', data=obs.np, size=2, aes(y=obs.np$freq.pred, x=log10(obs.np$p)+4.4)) +
@@ -493,7 +430,12 @@ coreTaxaNo_ITS <-its_core_taxa %>%
         panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
   coord_flip()
 
+########
+# Fig 2D
+
 grid.arrange(core_ITS_US, coreTaxaNo_ITS,  widths = c(2.5,.7))
+
+
 
 its_core_taxa %>%
   group_by(Phylum,new_names,Family,Genus,otu_id, Species) %>%
