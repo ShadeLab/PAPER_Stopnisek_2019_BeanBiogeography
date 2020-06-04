@@ -286,6 +286,7 @@ CELRK_otu <- otu_us_rare[,map_combined$bean=="CELRK"]
 Eclipse_otu <- otu_us_rare[,map_combined$bean=="Eclipse"]
 
 rhizo_otu <- otu_us_rare[,map_combined$soil =="rhizosphere"]
+otu_us_rare_rhizo=rhizo_otu
 CELRK_rhizo_otu <- otu_us_rare_rhizo[,map_rhizo_us$bean=="CELRK" & map_rhizo_us$soil=="rhizosphere"]
 Eclipse_rhizo_otu <- otu_us_rare[,map_rhizo_us$bean=="Eclipse" & map_rhizo_us$soil=="rhizosphere"]
 # make presence absence list from soil and plant into 1 & 0
@@ -494,5 +495,15 @@ coreUStaxaCounts <- core_species %>%
 grid.arrange(US_core_taxa, coreUStaxaCounts, widths=c(2.5,.7))
 
 
+data.frame(otu=as.factor(rownames(otu.rel.abun)),otu.rel.abun) %>%
+  gather(sample_ID, abun, -otu) %>%
+  left_join(map_combined[,c('sample_ID','pH', 'state', 'bean', 'plot', 'site', 'soil')], by='sample_ID') %>%
+  left_join(tax_v1, by='otu') %>%
+  group_by(site) %>%
+  summarise(meanAbun=sum(abun)/lenght(sample_ID)) %>%
+  mutate(core=if_else(otu %in% global_core, 'core', 'other') %>%
+           
+  
+  
 
 

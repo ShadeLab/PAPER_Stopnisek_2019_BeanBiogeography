@@ -2,6 +2,8 @@
 #IMPORTANT: run first the 16S_US_analysis.R script
 #*************************************************
 
+BiocManager::install("microbiome")
+
 library(dplyr)
 library(tidyr)
 library(ggplot2)
@@ -24,6 +26,7 @@ library(stringr)
 library(ggrepel)
 library(ggExtra)
 
+sessionInfo()
 setwd('~/Documents/git/PAPER_Stopnisek_2019_BeanBiogeography/')
 
 ###**********************************************************************************
@@ -249,7 +252,6 @@ coreTaxaNo <- core_all_v1 %>%
   coord_flip()
 
 grid.arrange(auto_plot_fig, coreTaxaNo, widths=c(2.5,.7))
-
 
 ######
 #Venn

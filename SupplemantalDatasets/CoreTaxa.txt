@@ -1,0 +1,49 @@
+"otu" "Kingdom" "Phylum" "Class" "Order" "Family" "Genus" "Species"
+"1" "GU359092.1.1471" "Bacteria" "Acidobacteria" "Subgroup 6" "Ambiguous_taxa" "Ambiguous_taxa" "Ambiguous_taxa" "Ambiguous_taxa"
+"2" "JN615823.1.1359" "Bacteria" "Acidobacteria" "Blastocatellia" "Blastocatellales" "Blastocatellaceae (Subgroup 4)" "uncultured" "uncultured bacterium"
+"3" "GQ120637.1.1515" "Bacteria" "Acidobacteria" "Subgroup 6" "Ambiguous_taxa" "Ambiguous_taxa" "Ambiguous_taxa" "Ambiguous_taxa"
+"4" "HM061977.1.1470" "Bacteria" "Acidobacteria" "Subgroup 6" "uncultured Acidobacteria bacterium" "uncultured Acidobacteria bacterium" "uncultured Acidobacteria bacterium" "uncultured Acidobacteria bacterium"
+"5" "JN023626.1.1506" "Bacteria" "Acidobacteria" "Subgroup 6" "uncultured bacterium" "uncultured bacterium" "uncultured bacterium" "uncultured bacterium"
+"6" "GU359072.1.1474" "Bacteria" "Acidobacteria" "Subgroup 6" NA NA NA NA
+"7" "HQ597858.1.1508" "Bacteria" "Acidobacteria" "Subgroup 6" "uncultured Acidobacteria bacterium" "uncultured Acidobacteria bacterium" "uncultured Acidobacteria bacterium" "uncultured Acidobacteria bacterium"
+"8" "HQ190266.1.1492" "Bacteria" "Acidobacteria" "Blastocatellia" "Blastocatellales" "Blastocatellaceae (Subgroup 4)" "Ambiguous_taxa" NA
+"9" "HM061710.1.1477" "Bacteria" "Acidobacteria" "Blastocatellia" "Blastocatellales" "Blastocatellaceae (Subgroup 4)" "RB41" "Ambiguous_taxa"
+"10" "HQ597865.1.1508" "Bacteria" "Acidobacteria" "Subgroup 6" "uncultured Acidobacteria bacterium" "uncultured Acidobacteria bacterium" "uncultured Acidobacteria bacterium" "uncultured Acidobacteria bacterium"
+"11" "GU550579.1.1244" "Bacteria" "Actinobacteria" "Actinobacteria" "Streptomycetales" "Streptomycetaceae" "Streptomyces" "Ambiguous_taxa"
+"12" "FM209319.1.1474" "Bacteria" "Actinobacteria" "Actinobacteria" "Micrococcales" "Micrococcaceae" "Arthrobacter" NA
+"13" "HE818691.1.1410" "Bacteria" "Actinobacteria" "Actinobacteria" "Micromonosporales" "Micromonosporaceae" "Dactylosporangium" "uncultured bacterium"
+"14" "HM274116.1.1360" "Bacteria" "Bacteroidetes" "Sphingobacteriia" "Sphingobacteriales" "Chitinophagaceae" "Flavisolibacter" "uncultured bacterium"
+"15" "JF429082.1.1514" "Bacteria" "Bacteroidetes" "Sphingobacteriia" "Sphingobacteriales" "Chitinophagaceae" "uncultured" "Ambiguous_taxa"
+"16" "HQ844554.1.1431" "Bacteria" "Chloroflexi" "KD4-96" "uncultured bacterium" "uncultured bacterium" "uncultured bacterium" "uncultured bacterium"
+"17" "KF712627.1.1476" "Bacteria" "Chloroflexi" "KD4-96" NA NA NA NA
+"18" "DQ129385.1.1478" "Bacteria" "Planctomycetes" "Planctomycetacia" "Planctomycetales" "Planctomycetaceae" "Pirellula" "uncultured bacterium"
+"19" "HG423553.1.1283" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Caulobacterales" "Caulobacteraceae" "Caulobacter" "Ambiguous_taxa"
+"20" "FR753119.1.1437" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Rhizobiales" "Rhizobiaceae" "Rhizobium" "Ambiguous_taxa"
+"21" "FJ936901.1.1446" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Rhodospirillales" "Rhodospirillaceae" "Dongia" "Ambiguous_taxa"
+"22" "FN421585.1.1365" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Sphingomonadales" "Sphingomonadaceae" "Sphingomonas" NA
+"23" "GQ389063.1.1478" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Sphingomonadales" "Sphingomonadaceae" "Novosphingobium" "Ambiguous_taxa"
+"24" "HF548406.1.1395" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Sphingomonadales" "Sphingomonadaceae" "Sphingomonas" "Ambiguous_taxa"
+"25" "JF265850.1.1359" "Bacteria" "Proteobacteria" "Gammaproteobacteria" "Xanthomonadales" "Xanthomonadales Incertae Sedis" "Acidibacter" "Ambiguous_taxa"
+"26" "JX223090.1.1452" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Rhizobiales" "Rhodobiaceae" "uncultured" "uncultured bacterium"
+"27" "GDHX01215817.4.1477" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Rhizobiales" "Bradyrhizobiaceae" "Nitrobacter" "Austrofundulus limnaeus"
+"28" "FN546860.1.1411" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Rhizobiales" "Phyllobacteriaceae" "Mesorhizobium" NA
+"29" "FN794227.1.1213" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Sphingomonadales" "Sphingomonadaceae" "Sphingomonas" "Ambiguous_taxa"
+"30" "GQ264021.1.1373" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Rhizobiales" "Hyphomicrobiaceae" NA NA
+"31" "GU940705.1.1318" "Bacteria" "Proteobacteria" "Betaproteobacteria" "Burkholderiales" "Oxalobacteraceae" "Ambiguous_taxa" "Ambiguous_taxa"
+"32" "JF265791.1.1314" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Rhodospirillales" "Rhodospirillales Incertae Sedis" "Reyranella" "uncultured bacterium"
+"33" "FM209302.1.1494" "Bacteria" "Proteobacteria" "Betaproteobacteria" "Burkholderiales" "Oxalobacteraceae" NA NA
+"34" "FR675947.1.1459" "Bacteria" "Proteobacteria" "Betaproteobacteria" "Burkholderiales" "Comamonadaceae" NA NA
+"35" "FM209322.1.1496" "Bacteria" "Proteobacteria" "Betaproteobacteria" "Burkholderiales" "Comamonadaceae" "Ramlibacter" NA
+"36" "FQ658643.1.1351" "Bacteria" "Proteobacteria" "Betaproteobacteria" "Burkholderiales" "Comamonadaceae" "Ambiguous_taxa" "Ambiguous_taxa"
+"37" "EF019297.1.1330" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Rhizobiales" "Xanthobacteraceae" "Variibacter" NA
+"38" "GQ115602.1.1307" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Rhizobiales" NA NA NA
+"39" "JQ426189.1.1442" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Rhizobiales" "Xanthobacteraceae" "Ambiguous_taxa" "Ambiguous_taxa"
+"40" "AJ532714.1.1323" "Bacteria" "Proteobacteria" "Deltaproteobacteria" "Myxococcales" "Phaselicystidaceae" "Phaselicystis" "Ambiguous_taxa"
+"41" "GQ263058.1.1429" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Rhizobiales" "Xanthobacteraceae" "Ambiguous_taxa" "Ambiguous_taxa"
+"42" "FJ936965.1.1497" "Bacteria" "Proteobacteria" "Gammaproteobacteria" "Xanthomonadales" "Xanthomonadaceae" "Arenimonas" "uncultured bacterium"
+"43" "GBGR01024531.3.1247" "Bacteria" "Proteobacteria" "Gammaproteobacteria" "Xanthomonadales" "Xanthomonadales Incertae Sedis" "Acidibacter" NA
+"44" "JF267691.1.1491" "Bacteria" "Proteobacteria" "Betaproteobacteria" "Nitrosomonadales" "Nitrosomonadaceae" "uncultured" "uncultured bacterium"
+"45" "GQ369048.1.1385" "Bacteria" "Proteobacteria" "Betaproteobacteria" "Burkholderiales" "Comamonadaceae" NA NA
+"46" "FN421989.1.1411" "Bacteria" "Proteobacteria" "Betaproteobacteria" "Burkholderiales" "Comamonadaceae" NA NA
+"47" "FR853451.1.1447" "Bacteria" "Proteobacteria" "Alphaproteobacteria" "Caulobacterales" "Caulobacteraceae" "Phenylobacterium" "uncultured bacterium"
+"48" "HQ190278.1.1525" "Bacteria" "Verrucomicrobia" "OPB35 soil group" "uncultured bacterium" "uncultured bacterium" "uncultured bacterium" "uncultured bacterium"
