@@ -1,6 +1,7 @@
 # Common bean rhizosphere microbiome
 
-This repository is part of the paper Stopnisek and Shade: Discovery of a spatially and temporally persistent core microbiome of the common bean rhizosphere (bioRxiv:https://doi.org/10.1101/727461).
+### Cite this work or code
+Stopnisek N, and A Shade.  Prioritizing persistent microbiome members in the common bean rhizosphere: an integrated analysis of space, time, and plant genotype. Submitted. Preprint: https://www.biorxiv.org/content/10.1101/727461v3 
 
 To access raw reads use following BioProjects IDs:
 - biogeography part is found under the ID: __PRJNA524532__
