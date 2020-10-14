@@ -440,11 +440,53 @@ coreTaxaNo_ITS <-its_core_taxa %>%
 
 grid.arrange(core_ITS_US, coreTaxaNo_ITS,  widths = c(2.5,.7))
 
+#' Distance decay analysis 
+
+df.sites=data.frame(name=c("CO", "NE", "MRF", "WA", "SVREC"),
+                    lat=c(40.5,41.9, 43.3, 46.8, 43.4),
+                    lon=c(-104.8,-103.8, -85.1, -121, -83.7))
+site_distance_matrix <- round(GeoDistanceInMetresMatrix(df.sites))/1000
+
+DISTdf <- data.frame(site1=as.factor(rownames(site_distance_matrix)),site_distance_matrix) %>%
+  gather(site2, dist, -site1) %>%
+  mutate(combined=paste(site1, site2, sep='-'))
+
+BCdf_its <- data.frame(sample1=as.factor(rownames(as.matrix(bean_its.dist))),as.matrix(bean_its.dist)) %>%
+  gather(sample2, BC, -sample1)
+
+BCdf_its$sample1=as.character(BCdf_its$sample1)
+BCdf_its$sample2=as.character(BCdf_its$sample2)
+
+BCdf_its$site1=ifelse(grepl("NE", BCdf_its$sample1), "NE", BCdf_its$sample1)
+BCdf_its$site1=ifelse(grepl("SVERC", BCdf_its$sample1), "SVREC", BCdf_its$site1)
+BCdf_its$site1=ifelse(grepl("MRF", BCdf_its$sample1), "MRF", BCdf_its$site1)
+BCdf_its$site1=ifelse(grepl("WA", BCdf_its$sample1), "WA", BCdf_its$site1)
+BCdf_its$site1=ifelse(grepl("CO", BCdf_its$sample1), "CO", BCdf_its$site1)
+
+BCdf_its$site2=ifelse(grepl("NE", BCdf_its$sample2), "NE", BCdf_its$sample2)
+BCdf_its$site2=ifelse(grepl("SVERC", BCdf_its$sample2), "SVREC", BCdf_its$site2)
+BCdf_its$site2=ifelse(grepl("MRF", BCdf_its$sample2), "MRF", BCdf_its$site2)
+BCdf_its$site2=ifelse(grepl("WA", BCdf_its$sample2), "WA", BCdf_its$site2)
+BCdf_its$site2=ifelse(grepl("CO", BCdf_its$sample2), "CO", BCdf_its$site2)
+
+BCdf_its$combined=paste(BCdf_its$site1, BCdf_its$site2, sep="-")
+
+BCdistDF_its <- BCdf_its %>% 
+  left_join(DISTdf, by='combined') %>%
+  filter(dist!=0.000)
+m <- lm(log(1-BCdistDF_its$BC) ~ log(BCdistDF_its$dist), BCdistDF_its)
+summary(m)
 
 
-its_core_taxa %>%
-  group_by(Phylum,new_names,Family,Genus,otu_id, Species) %>%
-  summarise(meanTax=mean(abun)) %>%
-  arrange(desc(meanTax))
+BCdistPlot_its <- BCdf_its %>% 
+  left_join(DISTdf, by='combined') %>%
+  filter(dist!=0.000) %>%
+  ggplot(aes(x=log(dist), y=log(1-BC))) +
+  geom_point() +
+  labs(x='Geographic distance (ln(km))', y='Community similarity (ln(BC))') +
+  stat_smooth(method = "lm", size = .8,level = .95)+
+  theme_bw() 
+
+
 
  

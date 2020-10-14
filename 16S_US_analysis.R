@@ -508,23 +508,53 @@ coreUStaxaCounts <- core_species %>%
 grid.arrange(US_core_taxa, coreUStaxaCounts, widths=c(2.5,.7))
 
 
-data.frame(otu=as.factor(rownames(otu.rel.abun)),otu.rel.abun) %>%
-  gather(sample_ID, abun, -otu) %>%
-  left_join(map_combined[,c('sample_ID','pH', 'state', 'bean', 'plot', 'site', 'soil')], by='sample_ID') %>%
-  left_join(tax_v1, by='otu') %>%
-  group_by(site) %>%
-  summarise(meanAbun=sum(abun)/lenght(sample_ID)) %>%
-  mutate(core=if_else(otu %in% global_core, 'core', 'other') %>%
-           
-  
-#' Preparing data for iCAMP
-#' First need to remove from the rooted tree OTUs that are not found in the OTU table
-#' We use phyloseq package to achive this
+#' Distance decay analysis 
 
-otu_us <- read.table('Data/OTU_table_US.txt', sep='\t', row.names = 1, header=T)
+df.sites=data.frame(name=c("CO", "NE", "MRF", "WA", "SVREC"),
+                    lat=c(40.5,41.9, 43.3, 46.8, 43.4),
+                    lon=c(-104.8,-103.8, -85.1, -121, -83.7))
+site_distance_matrix <- round(GeoDistanceInMetresMatrix(df.sites))/1000
 
-  
-OTU_input=otu_us[,map_combined$soil=='rhizosphere']
-TREE=read.tree('~/Desktop/tree.nwk')
-TREE_filt=keep.tip(TREE, rownames(OTU_input))
+DISTdf <- data.frame(site1=as.factor(rownames(site_distance_matrix)),site_distance_matrix) %>%
+  gather(site2, dist, -site1) %>%
+  mutate(combined=paste(site1, site2, sep='-'))
 
+BCdf <- data.frame(sample1=as.factor(rownames(as.matrix(bean.dist))),as.matrix(bean.dist)) %>%
+  gather(sample2, BC, -sample1)
+
+BCdf_its <- data.frame(sample1=as.factor(rownames(as.matrix(bean_its.dist))),as.matrix(bean_its.dist)) %>%
+  gather(sample2, BC, -sample1)
+
+BCdf=BCdf_its
+
+BCdf$sample1=as.character(BCdf$sample1)
+BCdf$sample2=as.character(BCdf$sample2)
+
+BCdf$site1=ifelse(grepl("NE", BCdf$sample1), "NE", BCdf$sample1)
+BCdf$site1=ifelse(grepl("SVERC", BCdf$sample1), "SVREC", BCdf$site1)
+BCdf$site1=ifelse(grepl("MRF", BCdf$sample1), "MRF", BCdf$site1)
+BCdf$site1=ifelse(grepl("WA", BCdf$sample1), "WA", BCdf$site1)
+BCdf$site1=ifelse(grepl("CO", BCdf$sample1), "CO", BCdf$site1)
+
+BCdf$site2=ifelse(grepl("NE", BCdf$sample2), "NE", BCdf$sample2)
+BCdf$site2=ifelse(grepl("SVERC", BCdf$sample2), "SVREC", BCdf$site2)
+BCdf$site2=ifelse(grepl("MRF", BCdf$sample2), "MRF", BCdf$site2)
+BCdf$site2=ifelse(grepl("WA", BCdf$sample2), "WA", BCdf$site2)
+BCdf$site2=ifelse(grepl("CO", BCdf$sample2), "CO", BCdf$site2)
+
+BCdf$combined=paste(BCdf$site1, BCdf$site2, sep="-")
+
+BCdistDF <- BCdf %>% 
+  left_join(DISTdf, by='combined') %>%
+  filter(dist!=0.000)
+m <- lm(log(1-BCdistDF$BC) ~ log(BCdistDF$dist), BCdistDF)
+summary(m)
+
+BCdistPlot <- BCdf %>% 
+  left_join(DISTdf, by='combined') %>%
+  filter(dist!=0.000) %>%
+  ggplot(aes(x=log(dist), y=log(1-BC))) +
+  geom_point() +
+  labs(x='Geographic distance (ln(km))', y='Community similarity (ln(BC))') +
+  stat_smooth(method = "lm", size = .8,level = .95) +
+  theme_bw()
