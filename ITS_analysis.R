@@ -51,6 +51,11 @@ map.alpha.its <- melt(map.div.its, id.vars=c("sample_name","bean", "plot", "stat
                   measure.vars=c("Richness", "Shannon", "Pielou"))
 
 map.alpha.its %>%
+  filter(variable=='Richness') %>%
+  group_by(variable) %>%
+  summarise(mean_var=mean(value))
+
+map.alpha.its %>%
   filter(soil=='rhizosphere') %>%
   group_by(variable) %>%
   summarise(mean_var=mean(value))

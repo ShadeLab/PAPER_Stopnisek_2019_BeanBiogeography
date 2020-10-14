@@ -54,6 +54,7 @@ rownames(map_combined)==colnames(otu_us)
 
 map_combined$sample_ID <- rownames(map_combined)
 
+
 #########
 # Fig S1A
 
@@ -107,6 +108,11 @@ map.div$Pielou <- pielou
 
 map.alpha <- melt(map.div, id.vars=c("sample_name","bean", "plot", "state", 'soil', 'site', 'irrigation', 'fertilization', 'pH', 'OM', 'Nitrogen', 'P'), 
                   measure.vars=c("Richness", "Shannon", "Pielou"))
+
+map.alpha %>%
+  filter(variable=='Richness') %>%
+  group_by(variable, site) %>%
+  summarise(mean_var=mean(value))
 
 ggplot(map.alpha[map.alpha$soil=='rhizosphere',], aes(y=value,x=bean, color=bean))+
   scale_color_manual(values = c('darkorange', 'black')) + 
@@ -260,8 +266,8 @@ map_rhizo_us <- map_combined[map_combined$soil!='bulk',]
 
 physeq_rhizo = subset_samples(physeq, soil!= 'bulk')
 diagdds_bean = phyloseq_to_deseq2(physeq_rhizo, ~ bean)
-diagdds_bean = DESeq(diagdds_bean, test="Wald", fitType="parametric")
-res_bean = results(diagdds_bean, cooksCutoff = FALSE)
+diagdds_bean = DESeq2::DESeq(diagdds_bean, test="Wald", fitType="parametric")
+res_bean = DESeq2::results(diagdds_bean, cooksCutoff = FALSE)
 alpha = 0.05
 
 sigtab_bean = res_bean[which(res_bean$padj < alpha), ]
@@ -409,6 +415,13 @@ Predict$otu <- rownames(Predict)
 UpPredictOTU <- unique(Predict$otu[ap==TRUE])
 DownPedictedOTU <- unique(Predict$otu[bp==TRUE])
 
+Predic_Biogeo=Predict %>%
+  filter(otu %in% global_core) %>%
+  left_join(tax_v2) %>%
+  mutate(prediction_biogeo=if_else(freq>pred.upr, "above", 'neutral'),
+         prediction_biogeo=if_else(freq<pred.lwr, "below", prediction_biogeo)) %>%
+  select(-c(p, bino.pred, bino.lwr, bino.upr, y)) 
+
 ########
 # Fig 2A
 
@@ -504,6 +517,14 @@ data.frame(otu=as.factor(rownames(otu.rel.abun)),otu.rel.abun) %>%
   mutate(core=if_else(otu %in% global_core, 'core', 'other') %>%
            
   
-  
+#' Preparing data for iCAMP
+#' First need to remove from the rooted tree OTUs that are not found in the OTU table
+#' We use phyloseq package to achive this
 
+otu_us <- read.table('Data/OTU_table_US.txt', sep='\t', row.names = 1, header=T)
+
+  
+OTU_input=otu_us[,map_combined$soil=='rhizosphere']
+TREE=read.tree('~/Desktop/tree.nwk')
+TREE_filt=keep.tip(TREE, rownames(OTU_input))
 
