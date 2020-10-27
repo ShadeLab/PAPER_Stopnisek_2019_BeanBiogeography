@@ -96,9 +96,7 @@ OTU.rare <- OTU.rare[,!(colnames(OTU.rare) %in% PowersoilMRC)]
 rel.abun <- decostand(OTU.rare, method = 'total', MARGIN = 2)
 #sum(rownames(OTU.rare) %in% global_core) #48 out of 48 global core taxa are included in the rarefied data
 
-
 # Creating rarifaction curves
-
 curve_colors_rare <- rep("darkgreen", ncol(OTU.rare))
 curve_colors_rare[map$Compartment=="rhizosphere"] <- "burlywood"
 rarecurve(t(OTU.rare), step=1000, label = FALSE, col = curve_colors_rare)
@@ -114,17 +112,19 @@ global_abun_df<- data.frame(otu=rownames(rel.abun), rel.abun) %>%
             timeNo=length(unique(ID)),
             rel=coreNo/timeNo) 
 
-global_abun_plot <- ggplot(global_abun_df, aes(x=as.factor(Timepoint), y=rel*100, color=Compartment, fill=Compartment)) +
+global_abun_plot <- ggplot(global_abun_df, aes(x=as.factor(Timepoint), y=rel, color=Compartment, fill=Compartment)) +
   geom_boxplot(position=position_dodge(1), outlier.shape = NA, alpha=.5)+  
   geom_point(position = position_jitterdodge())+
-  scale_color_manual(values = c("#E69F00", '#009E73')) +
-  scale_fill_manual(values = c("#E69F00", '#009E73')) +
+  scale_color_manual(values = c('#009E73',"#E69F00")) +
+  scale_fill_manual(values = c('#009E73',"#E69F00")) +
+  scale_x_discrete(labels=c("V2", "V5",'flowering','pod filling','senescence', 'dry')) +
   theme_classic()+
+  ylim(0,.68) +
   facet_grid(~Site) +
   labs(y='Relative abundance (%)', x=NULL) +
   theme(strip.text.x = element_blank(), 
         legend.position = 'none',
-        #axis.text.x = element_blank(),
+        axis.text.x = element_text(angle=60, hjust = 1),
         panel.background = element_rect(fill = "transparent",colour = NA),
         plot.background = element_rect(fill = "transparent",colour = NA))+
   stat_compare_means(label = "p.signif")
@@ -198,15 +198,18 @@ us_core_df <- data.frame(otu=rownames(rel.abun), rel.abun) %>%
             timeNo=length(unique(ID)),
             rel=coreNo/timeNo)
 
-us_core_plot <- ggplot(us_core_df, aes(x=as.factor(Timepoint), y=rel*100, color=Compartment, fill=Compartment)) +
+us_core_plot <- ggplot(us_core_df, aes(x=as.factor(Timepoint), y=rel, color=Compartment, fill=Compartment)) +
   geom_boxplot(position=position_dodge(1), outlier.shape = NA, alpha=.5)+  
   geom_point(position = position_jitterdodge())+
-  scale_color_manual(values = c("#E69F00", '#009E73')) +
-  scale_fill_manual(values = c("#E69F00", '#009E73')) +
+  scale_color_manual(values = c('#009E73',"#E69F00")) +
+  scale_fill_manual(values = c('#009E73',"#E69F00")) +  
+  scale_x_discrete(labels=c("V2", "V5",'flowering','pod filling','senescence', 'dry')) +
   theme_classic()+
+  ylim(0,.68) +
   facet_grid(~Site) +
-  labs(y='Relative abundance (%)', x='Timepoint') +
+  labs(y='Relative abundance (%)', x=NULL) +
   theme(strip.text.x = element_blank(),
+        axis.text.x = element_text(angle=60, hjust = 1),
         legend.title=element_text(size=8), 
         legend.text=element_text(size=8),
         legend.position = c(.2,.8),
@@ -216,14 +219,12 @@ us_core_plot <- ggplot(us_core_df, aes(x=as.factor(Timepoint), y=rel*100, color=
   stat_compare_means(label = "p.signif")
 
 #######
-# Fig 4
+# Fig 3
 
-ggarrange(ggarrange(global_abun_plot, us_core_plot, 
-                    labels = c("A", "B"), ncol = 1, nrow = 2),
-          global_occ_plot, labels=c("","C"),ncol=2, widths = c(.6,1)) 
+ggarrange(global_abun_plot, us_core_plot,labels = c("A", "B"), ncol = 2, nrow = 1)
 
 ########
-# Fig S5
+# Fig S6
 
 ggplot(global_core_occupancy,aes(x=as.factor(Timepoint), y=otu, color=occ_end, size=occ_end)) +
   geom_point() +
@@ -236,6 +237,8 @@ ggplot(global_core_occupancy,aes(x=as.factor(Timepoint), y=otu, color=occ_end, s
         panel.background = element_rect(fill = "transparent",colour = NA),
         plot.background = element_rect(fill = "transparent",colour = NA))
 
+global_core_occupancy %>%
+  filter(occ_end == 0)
 
 #'  DESeq2 for detecting rhizoplane enriched OTUs
 #'  For that we need first to remove all unpaired samples and samples that have low counts
@@ -667,3 +670,17 @@ ggarrange(deseqPlot, predictionPlot,phyloPlot, ncol = 3, widths = c(1,.6,.6))
 install.packages('patchwork')
 library(patchwork)
 deseqPlot + predictionPlot + phyloPlot
+
+
+
+CoreTaxaModel_MRC %>%
+  filter(otu %in% c('JF429082.1.1514', 'FM209319.1.1474', 'GU550579.1.1244', 'JF429082.1.1514', 'FM209322.1.1496','FR753119.1.1437',
+                    'GU940705.1.1318', 'FR853451.1.1447', 'FN546860.1.1411', 'HG423553.1.1283', 'FQ658643.1.1351','GQ389063.1.1478',
+                    'FR675947.1.1459', 'GQ115602.1.1307'))
+
+rhizoCoreMatrix <- OTU.rare.rhizo.mrc[rownames(OTU.rare.rhizo.mrc) %in% global_core,]
+planeCoreMatrix <- OTU.rare.plane.mrc[rownames(OTU.rare.plane.mrc) %in% global_core,]
+
+
+rhizoCoreOcc <- 1*(rowSums(rhizoCoreMatrix)>0)
+

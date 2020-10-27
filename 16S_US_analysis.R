@@ -61,10 +61,10 @@ map_combined$sample_ID <- rownames(map_combined)
 data.frame(otu=as.factor(rownames(otu_us)),otu_us) %>%
   gather(sample_ID, abun, -otu) %>%
   left_join(map_combined, by='sample_ID') %>%
-  group_by(sample_ID) %>%
+  group_by(sample_ID, bean) %>%
   summarise(readCount=sum(abun)) %>%
   arrange(desc(readCount)) %>%
-  ggplot(aes(x=sample_ID,y=readCount)) +
+  ggplot(aes(x=sample_ID,y=readCount, fill=bean)) +
   geom_bar(stat='identity')+
   geom_hline(yintercept=min(colSums(otu_us)), linetype="dashed", color = "red") +
   theme_bw()+
