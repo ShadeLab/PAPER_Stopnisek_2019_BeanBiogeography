@@ -558,3 +558,62 @@ BCdistPlot <- BCdf %>%
   labs(x='Geographic distance (ln(km))', y='Community similarity (ln(BC))') +
   stat_smooth(method = "lm", size = .8,level = .95) +
   theme_bw()
+
+
+#' Using iCAMP package for
+library(NST)
+library(iCAMP)
+install.packages(c("vegan", "permute", "ape", "bigmemory", "nortest", "minpack.lm", "Hmisc"))
+
+otu_us_rhizo_rare #rarefied OTU data subset to rhizosphere only 
+
+# whole dataset in phyoseq object
+OTUtable=otu_us %>%
+  rownames_to_column('otu') %>%
+  mutate(otu = str_replace(otu, "OTU_dn", "OTU_DN")) %>%
+  column_to_rownames(var = 'otu')
+
+TAXtable=taxonomy_phyloseq %>%
+  mutate(otu = str_replace(otu, 'OTU_dn', 'OTU_DN')) %>%
+  column_to_rownames(var='otu')
+  
+OTU = otu_table(OTUtable, taxa_are_rows = TRUE)
+TAX = tax_table(as.matrix(TAXtable))
+SAM = sample_data(map_combined)
+TREE=ape::read.tree('Data/tree.nwk')
+phy_tree(TREE)
+physeq <- merge_phyloseq(phyloseq(OTU, TAX), SAM, TREE)
+#' remove bulk soil samples and OTUs to match rarefied object
+rareUS <- otu_us_rhizo_rare[rowSums(otu_us_rhizo_rare)>0,]
+dim(rareUS)
+
+rarifiedOTUs<- data.frame(rareUS) %>%
+  rownames_to_column('otu') %>% 
+  mutate(otu = str_replace(otu, 'OTU_dn', 'OTU_DN')) %>% pull(otu)
+
+physeqFilt <- prune_taxa(rarifiedOTUs,physeq)
+physeqFilt2 <- prune_samples(sample_names(physeqFilt) %in% 
+                               map_combined$sample_ID[map_combined$soil=='rhizosphere'], physeqFilt)
+
+finalOTU <- as(otu_table(physeqFilt2), "matrix")
+finalOTU <- data.frame(finalOTU) %>%
+  rownames_to_column('SpeciesID')
+write.table(finalOTU, 'iCAMP/otus.txt', sep='\t')
+
+finalMAP <- data.frame(sample_data(physeqFilt2)) %>%
+  rownames_to_column('SampleID')
+write.table(finalMAP, 'iCAMP/environment.txt', sep='\t')
+
+finalTREE <- phy_tree(physeqFilt2) 
+ape::write.tree(finalTREE, file = "iCAMP/tree.nwk", append = FALSE,
+           digits = 10, tree.names = FALSE)
+
+finalTAX <- data.frame(tax_table(physeqFilt2))%>%
+  rownames_to_column('SpeciesID') %>%
+  select(SpeciesID, Kingdom, Phylum, Class, Order, Family, Species) %>%
+  dplyr::rename(Domain=Kingdom)
+write.table(finalTAX, 'iCAMP/classification.txt', sep='\t')
+
+treatFile <- finalMAP %>%
+  select(SampleID, site)
+write.table(treatFile, 'iCAMP/treat2col.txt', sep='\t')

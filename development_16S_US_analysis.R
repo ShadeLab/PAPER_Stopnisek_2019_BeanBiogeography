@@ -240,6 +240,23 @@ ggplot(global_core_occupancy,aes(x=as.factor(Timepoint), y=otu, color=occ_end, s
 global_core_occupancy %>%
   filter(occ_end == 0)
 
+global_core_occupancy %>%
+  group_by(Site, Compartment, Timepoint, timeNo) %>%
+  summarise(occ1=sum(occ_end==1),
+            occ.6=sum(occ_end<.5)) %>%
+  pivot_longer(values_to = "occ",
+               cols=c(occ1, occ.6)) %>%
+  ggplot(aes(x=Timepoint, y = occ, group=name, col= name)) +
+  geom_line(col='grey70') +
+  geom_point() +
+  theme_pubr() +
+  labs(title='Number of OTUs with occupancy 1',subtitle = "The total number of OTUs is 48", y="# OTUs") +
+  geom_hline(yintercept = 48, color='grey60', size=.5, linetype='dashed')+
+  facet_grid(~Site*Compartment) +
+  scale_color_manual(name="Occupancy",labels=c("<60%", "100%"), values = c('#FF6C90', 'black')) +
+  theme(legend.position = c(0.1, .5),
+        legend.justification = c(0.1, .5))
+  
 #'  DESeq2 for detecting rhizoplane enriched OTUs
 #'  For that we need first to remove all unpaired samples and samples that have low counts
 otu_dev <- otu_final[,colnames(otu_final) %in% colnames(OTU.rare)]
