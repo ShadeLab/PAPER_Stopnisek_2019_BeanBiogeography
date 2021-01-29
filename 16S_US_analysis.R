@@ -559,7 +559,6 @@ BCdistPlot <- BCdf %>%
   stat_smooth(method = "lm", size = .8,level = .95) +
   theme_bw()
 
-
 #' Using iCAMP package to quantify the assembly processes
 #' Using the online version of the tool within the Galaxy project (http://ieg3.rccc.ou.edu:8080/)
 #' 5 input files need to be generated: OTU table, Taxonomy table, Environmental data, Treatment table and phylogenetic tree.
@@ -601,12 +600,12 @@ physeqFilt2 <- prune_samples(sample_names(physeqFilt) %in%
 finalOTU <- as(otu_table(physeqFilt2), "matrix")
 finalOTU <- data.frame(finalOTU) %>%
   rownames_to_column('SpeciesID')
-write.table(finalOTU, 'iCAMP/otus.txt', sep='\t')
+#write.table(finalOTU, 'iCAMP/otus.txt', sep='\t')
 
 # Environmental table
 finalMAP <- data.frame(sample_data(physeqFilt2)) %>%
   rownames_to_column('SampleID')
-write.table(finalMAP, 'iCAMP/environment.txt', sep='\t')
+#write.table(finalMAP, 'iCAMP/environment.txt', sep='\t')
 
 # Phylogenetic tree
 finalTREE <- phy_tree(physeqFilt2) 
@@ -618,36 +617,57 @@ finalTAX <- data.frame(tax_table(physeqFilt2))%>%
   rownames_to_column('SpeciesID') %>%
   select(SpeciesID, Kingdom, Phylum, Class, Order, Family, Species) %>%
   dplyr::rename(Domain=Kingdom)
-write.table(finalTAX, 'iCAMP/classification.txt', sep='\t')
+#write.table(finalTAX, 'iCAMP/classification.txt', sep='\t')
 
 # Treatment file
 treatFile <- finalMAP %>%
   select(SampleID, site)
-write.table(treatFile, 'iCAMP/treat2col.txt', sep='\t')
+#write.table(treatFile, 'iCAMP/treat2col.txt', sep='\t')
 
+# Calculating the phylogenetic diversity (Faith's diversity index (PD))
 library(btools)
 corePhyseq <- prune_taxa(global_core, physeqFilt2)
-restPhyseq <- prune_taxa(!(taxa_names(physeqFilt2) %in% global_core),physeqFilt2)
+UScorePhyseq <- prune_taxa(core_US_otus, physeqFilt2)
+restPhyseq <- prune_taxa(!(taxa_names(physeqFilt2) %in% core_US_otus),physeqFilt2)
 
-PDcore <- estimate_pd(corePhyseq)
-PDcore$part <- 'core'
-PDrest <- estimate_pd(restPhyseq)
+PDcore <- estimate_pd(corePhyseq) %>%
+  rownames_to_column('sample_ID')
+PDcore$part <- 'Global core'
+PDusCore <- estimate_pd(UScorePhyseq) %>%
+  rownames_to_column('sample_ID')
+PDusCore$part <- 'US core'
+
+PDrest <- estimate_pd(restPhyseq) %>% rownames_to_column('sample_ID')
 PDrest$part <- 'rest'
 
-PDlong <- rbind(PDcore, PDrest)
+PDfull <- estimate_pd(physeqFilt2)%>% rownames_to_column('sample_ID')
+PDfull$part <- 'full'
 
-PDrest %>%
-  rownames_to_column('sample_ID') %>%
+PDlong <- rbind(PDfull, PDusCore, PDcore)
+max(PDlong$PD[PDlong$part=='full'])
+
+PDrest  %>%
   left_join(map_combined[,c('sample_ID','pH', 'site', 'bean', 'plot', 'site')], by='sample_ID') %>%
   ggplot(aes(x=factor(site), y=PD)) +
   geom_boxplot() +
   theme_pubr() +
-  ylim(0,350) +
-  geom_hline(yintercept =5.68, linetype='dashed', color='grey70', size=.5) +
+  #ylim(0,350) +
+  #geom_hline(yintercept =5.68, linetype='dashed', color='grey70', size=.5) +
   labs(title="Faith's phylogenetic diversity", 
        subtitle="Comparing the core and the whole\n(core excluded) community", 
        x=NULL) +
-  annotate("text", x=3, y=16,label="PD value of the core is 5.67", color='darkgreen')
+  annotate("text", x=3, y=16,label="PD value of the core is 5.3", color='darkgreen')
+
+PDlong %>%
+  left_join(map_combined[,c('sample_ID','pH', 'site', 'bean', 'plot', 'site')], by='sample_ID') %>%
+  ggplot(aes(x=factor(site), y=PD, col=part)) +
+  geom_jitter() +
+  theme_pubr() +
+  ylim(0,350) +
+  #geom_hline(yintercept =5.68, linetype='dashed', color='grey70', size=.5) +
+  labs(title="Faith's phylogenetic diversity", 
+       subtitle="Comparing the US core and the whole\n(US core excluded) community", 
+       x=NULL, col=NULL)
 
 tmp <- PDrest %>%
   rownames_to_column('sample_ID') %>%
@@ -673,6 +693,14 @@ topTaxonRA<- read.delim('iCAMP/Galaxy18-[iCAMP_BinTopClass].txt') # table with t
 
 library(forcats)
 
+groupSummary %>%
+  mutate(processAtLarge=if_else(Process %in% c('Homogeneous.Selection', 'Heterogeneous.Selection'), 'deterministic', 'stochastic')) %>%
+  filter(Process %in%c('Homogeneous.Selection','Heterogeneous.Selection')) %>%
+  group_by(processAtLarge, Group) %>%
+  summarise(Mean=sum(Mean)) %>%
+  group_by(processAtLarge) %>%
+  summarise(aver=mean(Mean))
+
 #Process contribution plot:
 groupSummary %>%
   mutate(processAtLarge=if_else(Process %in% c('Homogeneous.Selection', 'Heterogeneous.Selection'), 'deterministic', 'stochastic')) %>%
@@ -696,7 +724,6 @@ groupSummary %>%
 # Taxa contribution
 # 1. Need to find which bins contributed most to deterministic processes (proportion and sum across sites)
 # 2. Are any of these bins related to core taxa? Using topTaxonRA and taxonBin dfs
-
 DeterministicBins <- ProcessBin %>%
   filter(Index=='DominantProcess') %>%
   select(-c(Method,GroupBasedOn, Index)) %>%
@@ -718,6 +745,7 @@ coreBins <- taxonBin %>%
 # Into how many bins core taxa fall? 
 length(unique(coreBins$Bin))  
 # n=35 bins
+
 # Which bins are represented by more than 1?
 coreBins %>%
   group_by(Bin) %>%
@@ -771,9 +799,38 @@ CoreSeparate_iCAMP<- coreBins %>%
 
 ggarrange(coreTaxaICAMP, CoreSeparate_iCAMP, ncol=1, heights = c(1,.5))
 
-# Are any of the core taxa int he top taxon list from the iCAMP?
+# Are any of the core taxa in the top taxon list from the iCAMP?
 head(topTaxonRA)
 
-topTaxonRA %>%
-  filter(TopTaxonID %in% global_core)
-# 23 out of 35 bins where core taxa are represented also a top taxon.
+icampOTU<- coreBins %>%
+  left_join(procbin, by=c('Bin'='name')) %>%
+  mutate(count=1) %>%
+  filter(value == 'HoS')
+
+coreUSabove<- Predic_Biogeo[Predic_Biogeo$otu %in% global_core & Predic_Biogeo$prediction_biogeo=='above',] 
+
+count(unique(icampOTU$ID) %in% coreUSabove$otu)
+
+process.bin <- read.delim('~/Downloads/Galaxy22-[iCAMP_ProcessEachBin].tabular') # 
+bin.cont <- read.delim('~/Downloads/Galaxy23-[iCAMP_BinContribution].tabular') # containing information about what process is dominating within each bin
+
+process.bin[1:4]
+bin.cont[1:6]
+bin.cont %>%
+  pivot_longer(cols = starts_with('bin')) %>%
+  group_by(Process) %>%
+  summarise(sumEffect=sum(value))
+
+process.bin %>%
+  filter(Index=='DominantProcess') %>%
+  select(-c(Group,Method,GroupBasedOn, Index)) %>%
+  pivot_longer(cols = starts_with('bin'),
+               names_prefix='bin') %>%
+  mutate(name=paste('Bin',name,sep='')) %>%
+  filter(name %in% coreBins$Bin,
+         value %in% c('HoS', 'HeS')) %>%
+  mutate(Bin=str_replace(name,replacement = 'Bin', pattern = 'bin')) %>%
+  left_join(taxonBin) %>%
+  filter(ID %in% coreUSabove$otu)
+
+

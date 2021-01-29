@@ -528,10 +528,10 @@ Predic_Plane=Predict %>%
   mutate(prediction_plane=if_else(freq<pred.lwr, "below", 'neutral'),
          prediction_plane=if_else(freq>pred.upr, "above", prediction_plane)) %>%
   select(-c(p, bino.pred, bino.lwr, bino.upr, y)) %>%
-  rename(freq.plane=freq)%>%
-  rename(freq.pred.plane=freq.pred) %>%
-  rename(pred.lwr.plane=pred.lwr) %>%
-  rename(pred.upr.plane=pred.upr)
+  dplyr::rename(freq.plane=freq)%>%
+  dplyr::rename(freq.pred.plane=freq.pred) %>%
+  dplyr::rename(pred.lwr.plane=pred.lwr) %>%
+  dplyr::rename(pred.upr.plane=pred.upr)
 
 #' Rhizosphere dataset:
 spp=t(OTU.rare.rhizo)
@@ -555,10 +555,10 @@ Predic_Rhizo=Predict %>%
   mutate(prediction_rhizo=if_else(freq>pred.upr, "above", 'neutral'),
          prediction_rhizo=if_else(freq<pred.lwr, "below", prediction_rhizo)) %>%
   select(-c(p, bino.pred, bino.lwr, bino.upr, y)) %>%
-  rename(freq.rhizo=freq)%>%
-  rename(freq.pred.rhizo=freq.pred) %>%
-  rename(pred.lwr.rhizo=pred.lwr) %>%
-  rename(pred.upr.rhizo=pred.upr)
+  dplyr::rename(freq.rhizo = freq) %>%
+  dplyr::rename(freq.pred.rhizo=freq.pred) %>%
+  dplyr::rename(pred.lwr.rhizo=pred.lwr) %>%
+  dplyr::rename(pred.upr.rhizo=pred.upr)
 
 Development_Model <- left_join(Predic_Rhizo, Predic_Plane)
 Development_Model <- left_join(Development_Model, Predic_Biogeo)
@@ -595,7 +595,6 @@ Predic_Plane_MRC =Predict %>%
   rename(freq.pred.plane=freq.pred) %>%
   rename(pred.lwr.plane=pred.lwr) %>%
   rename(pred.upr.plane=pred.upr)
-
 
 map_rhizo_mrc= map[map$Compartment == 'rhizosphere' &  map$Site == 'MRC',]
 OTU.rare.rhizo.mrc=OTU.rare[,colnames(OTU.rare) %in% as.character(map_rhizo_mrc$ID)]
@@ -687,7 +686,6 @@ ggarrange(deseqPlot, predictionPlot,phyloPlot, ncol = 3, widths = c(1,.6,.6))
 install.packages('patchwork')
 library(patchwork)
 deseqPlot + predictionPlot + phyloPlot
-
 
 
 CoreTaxaModel_MRC %>%
