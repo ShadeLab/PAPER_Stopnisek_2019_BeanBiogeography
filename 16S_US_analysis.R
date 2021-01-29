@@ -560,14 +560,14 @@ BCdistPlot <- BCdf %>%
   theme_bw()
 
 
-#' Using iCAMP package for
-library(NST)
-library(iCAMP)
-install.packages(c("vegan", "permute", "ape", "bigmemory", "nortest", "minpack.lm", "Hmisc"))
+#' Using iCAMP package to quantify the assembly processes
+#' Using the online version of the tool within the Galaxy project (http://ieg3.rccc.ou.edu:8080/)
+#' 5 input files need to be generated: OTU table, Taxonomy table, Environmental data, Treatment table and phylogenetic tree.
 
 otu_us_rhizo_rare #rarefied OTU data subset to rhizosphere only 
 
-# whole dataset in phyoseq object
+# First create a combined dataset in phyoseq object to filter only rhizosphere samples.
+# I find it the easiest to use phyloseq for this task as it will remove samples amd taxa from all at once. 
 OTUtable=otu_us %>%
   rownames_to_column('otu') %>%
   mutate(otu = str_replace(otu, "OTU_dn", "OTU_DN")) %>%
@@ -583,7 +583,8 @@ SAM = sample_data(map_combined)
 TREE=ape::read.tree('Data/tree.nwk')
 phy_tree(TREE)
 physeq <- merge_phyloseq(phyloseq(OTU, TAX), SAM, TREE)
-#' remove bulk soil samples and OTUs to match rarefied object
+
+# Remove bulk soil samples and OTUs to match rarefied object
 rareUS <- otu_us_rhizo_rare[rowSums(otu_us_rhizo_rare)>0,]
 dim(rareUS)
 
@@ -594,26 +595,185 @@ rarifiedOTUs<- data.frame(rareUS) %>%
 physeqFilt <- prune_taxa(rarifiedOTUs,physeq)
 physeqFilt2 <- prune_samples(sample_names(physeqFilt) %in% 
                                map_combined$sample_ID[map_combined$soil=='rhizosphere'], physeqFilt)
+# Output tables for iCAMP:
 
+# OTU table
 finalOTU <- as(otu_table(physeqFilt2), "matrix")
 finalOTU <- data.frame(finalOTU) %>%
   rownames_to_column('SpeciesID')
 write.table(finalOTU, 'iCAMP/otus.txt', sep='\t')
 
+# Environmental table
 finalMAP <- data.frame(sample_data(physeqFilt2)) %>%
   rownames_to_column('SampleID')
 write.table(finalMAP, 'iCAMP/environment.txt', sep='\t')
 
+# Phylogenetic tree
 finalTREE <- phy_tree(physeqFilt2) 
 ape::write.tree(finalTREE, file = "iCAMP/tree.nwk", append = FALSE,
            digits = 10, tree.names = FALSE)
 
+# Taxonomy file
 finalTAX <- data.frame(tax_table(physeqFilt2))%>%
   rownames_to_column('SpeciesID') %>%
   select(SpeciesID, Kingdom, Phylum, Class, Order, Family, Species) %>%
   dplyr::rename(Domain=Kingdom)
 write.table(finalTAX, 'iCAMP/classification.txt', sep='\t')
 
+# Treatment file
 treatFile <- finalMAP %>%
   select(SampleID, site)
 write.table(treatFile, 'iCAMP/treat2col.txt', sep='\t')
+
+library(btools)
+corePhyseq <- prune_taxa(global_core, physeqFilt2)
+restPhyseq <- prune_taxa(!(taxa_names(physeqFilt2) %in% global_core),physeqFilt2)
+
+PDcore <- estimate_pd(corePhyseq)
+PDcore$part <- 'core'
+PDrest <- estimate_pd(restPhyseq)
+PDrest$part <- 'rest'
+
+PDlong <- rbind(PDcore, PDrest)
+
+PDrest %>%
+  rownames_to_column('sample_ID') %>%
+  left_join(map_combined[,c('sample_ID','pH', 'site', 'bean', 'plot', 'site')], by='sample_ID') %>%
+  ggplot(aes(x=factor(site), y=PD)) +
+  geom_boxplot() +
+  theme_pubr() +
+  ylim(0,350) +
+  geom_hline(yintercept =5.68, linetype='dashed', color='grey70', size=.5) +
+  labs(title="Faith's phylogenetic diversity", 
+       subtitle="Comparing the core and the whole\n(core excluded) community", 
+       x=NULL) +
+  annotate("text", x=3, y=16,label="PD value of the core is 5.67", color='darkgreen')
+
+tmp <- PDrest %>%
+  rownames_to_column('sample_ID') %>%
+  left_join(map_combined[,c('sample_ID','pH', 'bean', 'plot', 'site')], by='sample_ID')
+
+model<- tidy(aov(PD~site, data=tmp))
+TukeyHSD(aov(PD~site, data=tmp))
+
+#Calculate the range of the PD between site and the difference between the core and the rest
+t_test_rich = tmp %>%
+  #filter(soil=='rhizosphere') %>%
+  #group_by(variable) %>%
+  do(tidy(t.test(.$value~.$bean)))
+
+#import results from the iCAMP 
+processImportance <- read.delim('iCAMP/Galaxy12-[iCAMP_ProcessImportance].tabular') # 
+groupSummary <- read.delim('iCAMP/Galaxy13-[iCAMP_GroupSummary].tabular') # mean processes relative importance by site 
+Compare <- read.delim('iCAMP/Galaxy14-[iCAMP_Compare].tabular') #
+ProcessBin <- read.delim('iCAMP/Galaxy15-[iCAMP_ProcessEachBin].tabular') # containing information about what process is dominating within each bin
+binContribution <- read.delim('iCAMP/Galaxy16-[iCAMP_BinContribution].tabular') # contribution of each bin to each of the assembly processes (by location) 
+taxonBin<- read.delim('iCAMP/Galaxy17-[iCAMP_TaxonBin].txt') # table with information about which OTUs belong to which bin and their taxonomy. Includes also RA
+topTaxonRA<- read.delim('iCAMP/Galaxy18-[iCAMP_BinTopClass].txt') # table with the most prominent OTU with RA info
+
+library(forcats)
+
+#Process contribution plot:
+groupSummary %>%
+  mutate(processAtLarge=if_else(Process %in% c('Homogeneous.Selection', 'Heterogeneous.Selection'), 'deterministic', 'stochastic')) %>%
+  filter(Process!='Stochasticity') %>% 
+  mutate(Process=fct_relevel(Process, 'Homogeneous.Selection', 
+                             'Heterogeneous.Selection', 'Homogenizing.Dispersal',
+                             'Dispersal.Limitation', 'Drift.and.Others')) %>%
+  ggplot(aes(x=Process , y=Mean, fill=processAtLarge)) +
+  geom_bar(stat ='identity',position = 'dodge') +
+  theme_classic() +
+  facet_grid(~Group)+
+  labs(x=NULL, fill='Assembly process group', y='Mean of the relative\nimportance of a process')+
+  scale_fill_manual(values = c('#eecfc8','#7f9ba6'), 
+                    breaks = c('stochastic', 'deterministic')) +
+  scale_x_discrete(labels=c('HoS', 'HeS', 'HD','DL','Drift'))+
+  theme(axis.text.x = element_text(angle=90,hjust = 1, vjust=.5),
+        strip.background = element_blank(),
+        legend.title = element_text(size=9),
+        legend.position = 'bottom') 
+  
+# Taxa contribution
+# 1. Need to find which bins contributed most to deterministic processes (proportion and sum across sites)
+# 2. Are any of these bins related to core taxa? Using topTaxonRA and taxonBin dfs
+
+DeterministicBins <- ProcessBin %>%
+  filter(Index=='DominantProcess') %>%
+  select(-c(Method,GroupBasedOn, Index)) %>%
+  pivot_longer(cols = starts_with('bin')) %>%
+  filter(value %in% c('HoS', 'HeS')) %>%
+  group_by(name) %>%
+  summarise(nSites=length(Group)) 
+  
+DeterBin_Fig <- ggplot(DeterministicBins,aes(x=nSites))+
+  geom_histogram(col="black", fill="white",binwidth = 1) +
+  theme_classic() +
+  theme(plot.title = element_text(size=10),
+        axis.title = element_text(size=10)) +
+  labs(title='Number of deterministic\nbins across sites (n=5)', x='Number of\nsites found')
+  
+# No of the bins associated with the core OTUs are deterministically assembled
+coreBins <- taxonBin %>%
+  filter(ID %in% global_core)
+# Into how many bins core taxa fall? 
+length(unique(coreBins$Bin))  
+# n=35 bins
+# Which bins are represented by more than 1?
+coreBins %>%
+  group_by(Bin) %>%
+  summarise(nTaxa = length(ID)) %>%
+  filter(nTaxa>1) %>%
+  arrange(desc(nTaxa))
+# 11 bins, but each less than 4 otus
+
+procbin<- ProcessBin %>%
+  filter(Index=='DominantProcess') %>%
+  select(-c(Method,GroupBasedOn, Index)) %>%
+  pivot_longer(cols = starts_with('bin'),
+               names_prefix='bin') %>%
+  mutate(name=paste('Bin',name,sep=''))
+
+coreTaxaICAMP <- coreBins %>%
+  left_join(procbin, by=c('Bin'='name')) %>%
+  mutate(Process=fct_relevel(value, 'HoS', 'HD','DL','DR'),
+         count=1,
+         tax=if_else(Process == 'HoS', Class, 'other')) %>%
+  ggplot(aes(x=Process, y=count,group=Group, fill=tax)) +
+  geom_bar(stat = 'identity') +
+  theme_classic() +
+  theme(strip.background = element_blank(),
+        axis.text.x = element_text(angle=90, hjust = 1, vjust = .5)) +
+  facet_grid(~Group) + 
+  labs(fill=NULL, x=NULL) +
+  scale_fill_manual(values = c('#3b816c','#bed9d7', '#fadbe5', '#e78f5b', '#aaaaaa',
+                               '#000000', '#7f0000', '#fe0000', '#ffca35', '#e9eef3'),
+                    breaks = c('Actinobacteria', 'Alphaproteobacteria', 
+                               'Betaproteobacteria', 'Blastocatellia',
+                               'Gammaproteobacteria', 'KD4-96', 'OPB35 soil group',
+                               'Sphingobacteriia', 'Subgroup 6', 'other')) 
+  
+CoreSeparate_iCAMP<- coreBins %>%
+  left_join(procbin, by=c('Bin'='name')) %>%
+  mutate(count=1) %>%
+  filter(value == 'HoS') %>%
+  ggplot(aes(x=ID, y=Group, col = Class)) +
+  theme_classic()+
+  theme(axis.text.x = element_text(angle=45, size=7, hjust = 1,vjust = 1),
+        legend.key.size = unit(0, 'lines')) +
+  geom_point() +
+  labs(col=NULL, x=NULL, y=NULL)+
+  scale_color_manual(values = c('#3b816c','#bed9d7', '#fadbe5', '#e78f5b', '#aaaaaa',
+                               '#000000', '#7f0000', '#fe0000', '#ffca35'),
+                    breaks = c('Actinobacteria', 'Alphaproteobacteria', 
+                               'Betaproteobacteria', 'Blastocatellia',
+                               'Gammaproteobacteria', 'KD4-96', 'OPB35 soil group',
+                               'Sphingobacteriia', 'Subgroup 6')) 
+
+ggarrange(coreTaxaICAMP, CoreSeparate_iCAMP, ncol=1, heights = c(1,.5))
+
+# Are any of the core taxa int he top taxon list from the iCAMP?
+head(topTaxonRA)
+
+topTaxonRA %>%
+  filter(TopTaxonID %in% global_core)
+# 23 out of 35 bins where core taxa are represented also a top taxon.

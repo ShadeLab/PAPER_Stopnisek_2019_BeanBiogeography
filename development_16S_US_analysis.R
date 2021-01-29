@@ -96,7 +96,7 @@ OTU.rare <- OTU.rare[,!(colnames(OTU.rare) %in% PowersoilMRC)]
 rel.abun <- decostand(OTU.rare, method = 'total', MARGIN = 2)
 #sum(rownames(OTU.rare) %in% global_core) #48 out of 48 global core taxa are included in the rarefied data
 
-# Creating rarifaction curves
+# Creating rarefaction curves
 curve_colors_rare <- rep("darkgreen", ncol(OTU.rare))
 curve_colors_rare[map$Compartment=="rhizosphere"] <- "burlywood"
 rarecurve(t(OTU.rare), step=1000, label = FALSE, col = curve_colors_rare)

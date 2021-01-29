@@ -1,31 +1,31 @@
-SampleID	sample_name	bean	state	plot	soil	seq_run	site	fertilization	rotation	irrigation	atmp_max	atmp_min	mstr0_max	mstr0_min	pcpn	relh_max	relh_min	rpet	soil0_max	soil0_min	X16S_Qubit	ITS_Qubit	location	Lat	Long	date	pH	P	K	Ca	Mg	OM	NO3	NH4	Nitrogen	sample_ID
-COc77203	CO_77203	CELRK	CO	1	rhizosphere	1	CO	manure	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	13.6	47	Fort_Collins_CO	40.574384	-105.07414	08.03.17	7.8	27	253	4080	474	1.6	20.4	2.7	0.1	COc77203
-COc77206	CO_77206	Eclipse	CO	1	rhizosphere	1	CO	manure	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	21.8	53.4	Fort_Collins_CO	40.574384	-105.07414	08.03.17	7.8	20	248	4190	502	1.5	19.3	1.1	0.1	COc77206
-COc77229	CO_77229	Eclipse	CO	2	rhizosphere	1	CO	manure	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	13	34.4	Fort_Collins_CO	40.574384	-105.07414	08.03.17	8.2	23	282	4292	524	1.8	13.2	1.2	0.11	COc77229
-COc77230	CO_77230	CELRK	CO	2	rhizosphere	1	CO	manure	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	22.2	33.2	Fort_Collins_CO	40.574384	-105.07414	08.03.17	8.2	24	288	4378	532	1.6	6.4	2.4	0.11	COc77230
-COc77243	CO_77243	CELRK	CO	3	rhizosphere	1	CO	manure	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	21.6	47.8	Fort_Collins_CO	40.574384	-105.07414	08.03.17	7.9	24	292	4302	512	1.6	14.3	1.6	0.11	COc77243
-COc77256	CO_77256	Eclipse	CO	3	rhizosphere	1	CO	manure	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	13.5	58.2	Fort_Collins_CO	40.574384	-105.07414	08.03.17	8	24	291	4308	518	1.6	4.9	1.2	0.11	COc77256
-COc77265	CO_77265	CELRK	CO	4	rhizosphere	1	CO	manure	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	22.6	52	Fort_Collins_CO	40.574384	-105.07414	08.03.17	8.2	24	343	4330	540	1.9	6	1.6	0.11	COc77265
-COc77268	CO_77268	Eclipse	CO	4	rhizosphere	1	CO	manure	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	24.2	9.02	Fort_Collins_CO	40.574384	-105.07414	08.03.17	8.3	22	316	4308	526	1.9	4.7	2.6	0.11	COc77268
-MRFc1	MRF_1	Eclipse	MI	1	rhizosphere	1	MRF	synthetic		irrigation	22	9.4	0.131	0.118	2.88	97.50%	45.50%	3.5	18.7	14.7	29.2	49	Montcalm_MI	42.701714	-84.482354	07.21.17	5.9	163	122	684	110	2.1	30.3	1	0.09	MRFc1
-MRFc2	MRF_2	Eclipse	MI	2	rhizosphere	1	MRF	synthetic		irrigation	22	9.4	0.131	0.118	2.88	97.50%	45.50%	3.5	18.7	14.7	29.4	51.2	Montcalm_MI	42.701714	-84.482354	07.21.17	6.3	163	117	750	118	2.2	37.7	0.7	0.11	MRFc2
-MRFc3	MRF_3	Eclipse	MI	3	rhizosphere	1	MRF	synthetic		irrigation	22	9.4	0.131	0.118	2.88	97.50%	45.50%	3.5	18.7	14.7	24.2	56	Montcalm_MI	42.701714	-84.482354	07.21.17	5.4	168	137	539	94	2.1	64	1.5	0.1	MRFc3
-NEc109	NE_109	CELRK	NE	1	rhizosphere	1	NE	no fertilization	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	11.5	5.22	Scotts_Bluff_County_NE	41.868297	-103.66545	07.20.17	8	68	420	2049	301	1.3	4.9	0.6	0.06	NEc109
-NEc118	NE_118	Eclipse	NE	1	rhizosphere	1	NE	no fertilization	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	16.1	52.6	Scotts_Bluff_County_NE	41.868297	-103.66545	07.20.17	7.9	59	438	2237	308	1.4	8	1.4	0.07	NEc118
-NEc212	NE_212	CELRK	NE	2	rhizosphere	1	NE	no fertilization	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	18.7	57.6	Scotts_Bluff_County_NE	41.868297	-103.66545	07.20.17	7.9	59	379	1915	288	1.2	15.7	0.4	0.07	NEc212
-NEc215	NE_215	Eclipse	NE	2	rhizosphere	1	NE	no fertilization	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	17.5	58.6	Scotts_Bluff_County_NE	41.868297	-103.66545	07.20.17	8	66	378	1720	288	1.1	6.8	0.3	0.06	NEc215
-NEc311	NE_311	Eclipse	NE	3	rhizosphere	1	NE	no fertilization	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	12.8	47.8	Scotts_Bluff_County_NE	41.868297	-103.66545	07.20.17	7.8	50	370	1757	296	1.4	5.5	0.6	0.07	NEc311
-NEc317	NE_317	CELRK	NE	3	rhizosphere	1	NE	no fertilization	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	13.2	48.6	Scotts_Bluff_County_NE	41.868297	-103.66545	07.20.17	7.6	52	399	1897	304	1.6	10.9	0.7	0.07	NEc317
-NEc414	NE_414	CELRK	NE	4	rhizosphere	1	NE	no fertilization	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	15.8	39.2	Scotts_Bluff_County_NE	41.868297	-103.66545	07.20.17	7.8	46	395	1820	305	1.6	17.1	1.3	0.07	NEc414
-NEc416	NE_416	Eclipse	NE	4	rhizosphere	1	NE	no fertilization	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	10.4	46.2	Scotts_Bluff_County_NE	41.868297	-103.66545	07.20.17	7.8	61	442	1936	314	1.5	15.6	1.1	0.08	NEc416
-SVERCc1c16S	SVERC_1	CELRK	MI	1	rhizosphere	2	SVREC	synthetic		no irrigation	NA	NA	NA	NA	NA			NA	NA	NA	NA	NA	Saginaw_MI	43.401206	-83.685091	07.27.17	7.7	56	200	2277	476	2.4	6.1	1.8	0.13	SVERCc1c16S
-SVERCc2	SVERC_2	CELRK	MI	2	rhizosphere	1	SVREC	synthetic		no irrigation	NA	NA	NA	NA	NA			NA	NA	NA	38.8	51.4	Saginaw_MI	43.401206	-83.685091	07.27.17	7.6	34	169	2449	414	2.3	15	2	0.13	SVERCc2
-SVERCc2c16S	SVERC_2	CELRK	MI	2	rhizosphere	2	SVREC	synthetic		no irrigation	NA	NA	NA	NA	NA			NA	NA	NA	NA	NA	Saginaw_MI	43.401206	-83.685091	07.27.17	7.6	34	169	2449	414	2.3	15	2	0.13	SVERCc2c16S
-SVERCc3	SVERC_3	CELRK	MI	3	rhizosphere	1	SVREC	synthetic		no irrigation	NA	NA	NA	NA	NA			NA	NA	NA	28.2	51.2	Saginaw_MI	43.401206	-83.685091	07.27.17	7.8	40	160	3067	256	2.3	17.2	3	0.13	SVERCc3
-SVERCc3c16S	SVERC_3	CELRK	MI	3	rhizosphere	2	SVREC	synthetic		no irrigation	NA	NA	NA	NA	NA			NA	NA	NA	NA	NA	Saginaw_MI	43.401206	-83.685091	07.27.17	7.7	56	200	2277	476	2.4	6.1	1.8	0.13	SVERCc3c16S
-WAcC1	WA_C1	CELRK	WA	1	rhizosphere	1	WA	synthetic	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	55.8	37.4	Othello_WA	46.826214	-119.17486	08.03.17	5.6	70	173	1110	217	1.8	43	1.6	0.08	WAcC1
-WAcC2	WA_C2	CELRK	WA	2	rhizosphere	1	WA	synthetic	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	12.8	19	Othello_WA	46.826214	-119.17486	08.03.17	6.1	54	156	1274	213	1.8	19	1	0.09	WAcC2
-WAcC3	WA_C3	CELRK	WA	3	rhizosphere	1	WA	synthetic	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	22.2	44.8	Othello_WA	46.826214	-119.17486	08.03.17	5.8	56	162	1225	218	1.9	32.6	2.2	0.08	WAcC3
-WAcE1	WA_E1	Eclipse	WA	1	rhizosphere	1	WA	synthetic	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	24.6	48.4	Othello_WA	46.826214	-119.17486	08.03.17	6.4	34	141	1346	225	1.6	17.8	1.9	0.07	WAcE1
-WAcE2	WA_E2	Eclipse	WA	2	rhizosphere	1	WA	synthetic	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	21.4	6.14	Othello_WA	46.826214	-119.17486	08.03.17	6.5	39	132	1292	218	1.8	20.8	3	0.07	WAcE2
-WAcE3	WA_E3	Eclipse	WA	3	rhizosphere	1	WA	synthetic	corn	irrigation	NA	NA	NA	NA	NA			NA	NA	NA	18.2	3.6	Othello_WA	46.826214	-119.17486	08.03.17	6.3	34	129	1325	230	1.8	24.3	2.1	0.08	WAcE3
+SampleID	bean	state	plot	seq_run	site	pH
+COc77203	CELRK	CO	1	1	CO	7.8
+COc77206	Eclipse	CO	1	1	CO	7.8
+COc77229	Eclipse	CO	2	1	CO	8.2
+COc77230	CELRK	CO	2	1	CO	8.2
+COc77243	CELRK	CO	3	1	CO	7.9
+COc77256	Eclipse	CO	3	1	CO	8
+COc77265	CELRK	CO	4	1	CO	8.2
+COc77268	Eclipse	CO	4	1	CO	8.3
+MRFc1	Eclipse	MI	1	1	MRF	5.9
+MRFc2	Eclipse	MI	2	1	MRF	6.3
+MRFc3	Eclipse	MI	3	1	MRF	5.4
+NEc109	CELRK	NE	1	1	NE	8
+NEc118	Eclipse	NE	1	1	NE	7.9
+NEc212	CELRK	NE	2	1	NE	7.9
+NEc215	Eclipse	NE	2	1	NE	8
+NEc311	Eclipse	NE	3	1	NE	7.8
+NEc317	CELRK	NE	3	1	NE	7.6
+NEc414	CELRK	NE	4	1	NE	7.8
+NEc416	Eclipse	NE	4	1	NE	7.8
+SVERCc1c16S	CELRK	MI	1	2	SVREC	7.7
+SVERCc2	CELRK	MI	2	1	SVREC	7.6
+SVERCc2c16S	CELRK	MI	2	2	SVREC	7.6
+SVERCc3	CELRK	MI	3	1	SVREC	7.8
+SVERCc3c16S	CELRK	MI	3	2	SVREC	7.7
+WAcC1	CELRK	WA	1	1	WA	5.6
+WAcC2	CELRK	WA	2	1	WA	6.1
+WAcC3	CELRK	WA	3	1	WA	5.8
+WAcE1	Eclipse	WA	1	1	WA	6.4
+WAcE2	Eclipse	WA	2	1	WA	6.5
+WAcE3	Eclipse	WA	3	1	WA	6.3
